@@ -1,0 +1,4 @@
+%{
+  "decimal": {:hex, :decimal, "1.8.0", "ca462e0d885f09a1c5a342dbd7c1dcf27ea63548c65a65e67334f4b61803822e", [:mix], [], "hexpm"},
+  "number": {:hex, :number, "1.0.0", "b88229d83830147186e8e3f133395fa9faf4f17126cdfeb3e2d19cc538d35ed5", [:mix], [{:decimal, "~> 1.5", [hex: :decimal, repo: "hexpm", optional: false]}], "hexpm"},
+}
