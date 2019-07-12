@@ -6,12 +6,12 @@ defmodule EmptyMachineTest do
     {:ok, pid: pid}
   end
 
-  test "displays shows INSERT COIN", context do
+  test "it displays INSERT COIN", context do
     pid = context[:pid]
     assert VendingMachine.display(pid) == "INSERT COIN"
-  end
+  end  
 
-  test "coin return is empty", context do
+  test "it has not coins in the coin return", context do
     pid = context[:pid]
     assert VendingMachine.coin_return(pid) == []
   end
