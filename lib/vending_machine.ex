@@ -2,39 +2,49 @@ defmodule VendingMachine do
 
   defmodule State do
     defstruct inserted: 0, returned: []
+
+    def start_link do
+      Agent.start_link fn -> %State{} end
+    end
+
+    def inserted(pid) do
+      Agent.get pid, fn state -> state.inserted end
+    end
+
+    def inserted(pid, value) do
+      Agent.update pid, fn state -> %{ state | inserted: value } end
+    end
+
+    def returned(pid) do
+      Agent.get pid, fn state -> state.returned end
+    end
+
+    def returned(pid, value) do
+      Agent.update pid, fn state -> %{ state | returned: value } end
+    end
   end
 
   def start_link do
-    Agent.start_link fn -> %State{} end
+    State.start_link
   end
 
   def display(pid) do
-    Agent.get pid, fn state ->
-      case state.inserted do
-        0 -> "INSERT COIN"
-        n -> format_pennies(n)
-      end
+    case State.inserted(pid) do
+      0 -> "INSERT COIN"
+      n -> format_pennies(n)
     end
   end
 
   def coin_return(pid) do
-    coins = Agent.get pid, fn state -> state.returned end
-    Agent.update pid, fn state ->
-      %{ state | returned: [] }
-    end
+    coins = State.returned(pid)
+    State.returned(pid, [])
     coins
   end
 
   def insert_coin(pid, coin) do
     case coin_value(coin) do
-      {:ok, value} -> 
-        Agent.update pid, fn state -> 
-          %{ state | inserted: state.inserted + value }
-        end
-      {:error} ->
-        Agent.update pid, fn state ->
-          %{ state | returned: state.returned ++ [coin] }
-        end
+      {:ok, value} -> State.inserted(pid, State.inserted(pid) + value)
+      {:error} -> State.returned(pid, State.returned(pid) ++ [coin])
     end
   end
 
