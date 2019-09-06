@@ -2,18 +2,21 @@ defmodule EmptyMachineTest do
   use ExUnit.Case
 
   setup do
-    {:ok, pid} = VendingMachine.start_link()
-    {:ok, pid: pid}
+    [ machine: VendingMachine.boot() ]
   end
 
   test "it displays INSERT COIN", context do
-    pid = context[:pid]
-    assert VendingMachine.display(pid) == "INSERT COIN"
+    display = context.machine
+    |> VendingMachine.display()
+
+    assert display == "INSERT COIN"
   end  
 
   test "it has not coins in the coin return", context do
-    pid = context[:pid]
-    assert VendingMachine.coin_return(pid) == []
+    { _, coins } = context.machine
+    |> VendingMachine.coin_return()
+    
+    assert coins == []
   end
 
 end

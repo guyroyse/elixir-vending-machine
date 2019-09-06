@@ -2,44 +2,55 @@ defmodule SingleCoinTest do
   use ExUnit.Case
 
   setup do
-    {:ok, pid} = VendingMachine.start_link()
-    {:ok, pid: pid}
+    [ machine: VendingMachine.boot() ]
   end
 
   test "it displays the value of a NICKEL", context do
-    pid = context[:pid]
-    VendingMachine.insert_coin(pid, :nickel)
-    assert VendingMachine.display(pid) == "0.05"
+    display = context.machine
+    |> VendingMachine.insert_coin(:nickel)
+    |> VendingMachine.display()
+
+    assert display == "0.05"
   end
 
   test "it displays the value of a DIME", context do
-    pid = context[:pid]
-    VendingMachine.insert_coin(pid, :dime)
-    assert VendingMachine.display(pid) == "0.10"
+    display = context.machine
+    |> VendingMachine.insert_coin(:dime)
+    |> VendingMachine.display()
+
+    assert display == "0.10"
   end
 
   test "it displays the value of a QUARTER", context do
-    pid = context[:pid]
-    VendingMachine.insert_coin(pid, :quarter)
-    assert VendingMachine.display(pid) == "0.25"
+    display = context.machine
+    |> VendingMachine.insert_coin(:quarter)
+    |> VendingMachine.display()
+
+    assert display == "0.25"
   end
 
   test "NICKELS are not placed in the coin return", context do
-    pid = context[:pid]
-    VendingMachine.insert_coin(pid, :nickel)
-    assert VendingMachine.coin_return(pid) == []
+    { _, coins } = context.machine
+    |> VendingMachine.insert_coin(:nickel)
+    |> VendingMachine.coin_return()
+
+    assert coins == []
   end
 
   test "DIMES are not placed in the coin return", context do
-    pid = context[:pid]
-    VendingMachine.insert_coin(pid, :dime)
-    assert VendingMachine.coin_return(pid) == []
+    { _, coins } = context.machine
+    |> VendingMachine.insert_coin(:dime)
+    |> VendingMachine.coin_return()
+
+    assert coins == []
   end
 
   test "QUARTERS are not placed in the coin return", context do
-    pid = context[:pid]
-    VendingMachine.insert_coin(pid, :quarter)
-    assert VendingMachine.coin_return(pid) == []
+    { _, coins } = context.machine
+    |> VendingMachine.insert_coin(:quarter)
+    |> VendingMachine.coin_return()
+
+    assert coins == []
   end
 
 end
