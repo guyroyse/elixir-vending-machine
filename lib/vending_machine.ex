@@ -1,56 +1,53 @@
 defmodule VendingMachine do
 
-  defmodule State do
-    defstruct inserted: 0, returned: []
-
-    def inserted(state) do
-      state.inserted
-    end
-
-    def inserted(state, value) do
-      %{ state | inserted: value }
-    end
-
-    def returned(state) do
-      state.returned
-    end
-
-    def returned(state, value) do
-      %{ state | returned: value }
-    end
-  end
+  defstruct [
+    inserted: 0,
+    returned: [],
+    next_display: nil
+  ]
 
   def boot() do
-    %State{}
+    %VendingMachine{}
   end
 
   def display(machine) do
-    case State.inserted(machine) do
-      0 -> "INSERT COIN"
-      n -> format_pennies(n)
-    end
+    display = format_display(machine.inserted, machine.next_display)
+    machine = %VendingMachine{ machine | next_display: nil }
+    { machine, display }
   end
 
   def coin_return(machine) do
-    coins = State.returned(machine)
-    machine = State.returned(machine, [])
+    coins = machine.returned
+    machine = %VendingMachine{ machine | returned: [] }
     { machine, coins }
   end
 
   def insert_coin(machine, coin) do
     case coin_value(coin) do
-      {:ok, value} -> State.inserted(machine, State.inserted(machine) + value)
-      {:error} -> State.returned(machine, State.returned(machine) ++ [coin])
+      {:ok, value} -> %VendingMachine{ machine | inserted: machine.inserted + value }
+      {:error} -> %VendingMachine{ machine | returned: machine.returned ++ [coin] }
     end
   end
 
-  defp coin_value(coin) do
-    case coin do
-      :nickel -> {:ok, 5}
-      :dime -> {:ok, 10}
-      :quarter -> {:ok, 25}
-      _ -> {:error}
-    end
+  def select_cola(machine) do
+    %VendingMachine{ machine | next_display: "PRICE 1.00" }
+  end
+
+  defp coin_value(:nickel),  do: { :ok, 5 }
+  defp coin_value(:dime),    do: { :ok, 10 }
+  defp coin_value(:quarter), do: { :ok, 25 }
+  defp coin_value(_),        do: { :error }
+
+  defp format_display(0 = _inserted, nil = _next_display) do
+    "INSERT COIN"
+  end
+
+  defp format_display(inserted, nil = _next_display) do
+    format_pennies(inserted)
+  end
+
+  defp format_display(_inserted, next_display) do
+    next_display
   end
 
   defp format_pennies(n) do

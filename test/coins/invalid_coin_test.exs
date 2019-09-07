@@ -45,7 +45,8 @@ defmodule InvalidCoinTest do
     |> VendingMachine.insert_coin(:dollar)
     |> VendingMachine.insert_coin(:quid)
 
-    assert VendingMachine.display(machine) == "0.40"
+    { _, display } = VendingMachine.display(machine)
+    assert display == "0.40"
 
     { _, coins } = VendingMachine.coin_return(machine)
     assert coins == [:penny, :dollar, :quid]

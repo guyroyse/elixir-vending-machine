@@ -6,7 +6,7 @@ defmodule EmptyMachineTest do
   end
 
   test "it displays INSERT COIN", context do
-    display = context.machine
+    { _, display } = context.machine
     |> VendingMachine.display()
 
     assert display == "INSERT COIN"

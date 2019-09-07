@@ -6,7 +6,7 @@ defmodule SingleCoinTest do
   end
 
   test "it displays the value of a NICKEL", context do
-    display = context.machine
+    { _, display } = context.machine
     |> VendingMachine.insert_coin(:nickel)
     |> VendingMachine.display()
 
@@ -14,7 +14,7 @@ defmodule SingleCoinTest do
   end
 
   test "it displays the value of a DIME", context do
-    display = context.machine
+    { _, display } = context.machine
     |> VendingMachine.insert_coin(:dime)
     |> VendingMachine.display()
 
@@ -22,7 +22,7 @@ defmodule SingleCoinTest do
   end
 
   test "it displays the value of a QUARTER", context do
-    display = context.machine
+    { _, display } = context.machine
     |> VendingMachine.insert_coin(:quarter)
     |> VendingMachine.display()
 

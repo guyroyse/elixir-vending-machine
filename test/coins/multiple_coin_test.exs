@@ -6,7 +6,7 @@ defmodule MultipleCoinTest do
   end
 
   test "it displays the total value of multiple coins", context do
-    display = context.machine
+    { _, display } = context.machine
     |> VendingMachine.insert_coin(:nickel)
     |> VendingMachine.insert_coin(:dime)
     |> VendingMachine.insert_coin(:quarter)
@@ -16,7 +16,7 @@ defmodule MultipleCoinTest do
   end
 
   test "it displays the total value of multiple coins in dollars", context do
-    display = context.machine
+    { _, display } = context.machine
     |> VendingMachine.insert_coin(:nickel)
     |> VendingMachine.insert_coin(:dime)
     |> VendingMachine.insert_coin(:quarter)
@@ -29,7 +29,7 @@ defmodule MultipleCoinTest do
   end
 
   test "it displays the total value of multiple coins in tens of dollars", context do
-    display = 1..45
+    { _, display } = 1..45
     |> Enum.reduce(context.machine, fn _, machine -> 
       VendingMachine.insert_coin(machine, :quarter)
     end)
