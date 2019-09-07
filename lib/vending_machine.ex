@@ -33,6 +33,14 @@ defmodule VendingMachine do
     %VendingMachine{ machine | next_display: "PRICE 1.00" }
   end
 
+  def select_chips(machine) do
+    %VendingMachine{ machine | next_display: "PRICE 0.50" }
+  end
+
+  def select_candy(machine) do
+    %VendingMachine{ machine | next_display: "PRICE 0.65" }
+  end
+
   defp coin_value(:nickel),  do: { :ok, 5 }
   defp coin_value(:dime),    do: { :ok, 10 }
   defp coin_value(:quarter), do: { :ok, 25 }
