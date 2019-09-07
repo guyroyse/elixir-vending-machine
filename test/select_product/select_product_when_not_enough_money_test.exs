@@ -1,4 +1,4 @@
-defmodule SelectProductWhenEmptyTest do
+defmodule SelectProductWhenNotEnoughMoneyTest do
   use ExUnit.Case
 
   setup do
@@ -14,31 +14,31 @@ defmodule SelectProductWhenEmptyTest do
     assert display == "PRICE 1.00"
 
     { _, display } = VendingMachine.display(machine)
-    assert display == "INSERT COIN"
+    assert display == "0.25"
   end
 
   test "it rejects CHIPS selection when insufficient coins are inserted", context do
     machine = context.machine
     |> VendingMachine.insert_coin(:quarter)
-    |> VendingMachine.select_chips(context.machine)
+    |> VendingMachine.select_chips()
 
     { machine, display } = VendingMachine.display(machine)
     assert display == "PRICE 0.50"
 
     { _, display } = VendingMachine.display(machine)
-    assert display == "INSERT COIN"
+    assert display == "0.25"
   end
 
   test "it rejects CANDY selection when insufficient coins are inserted", context do
     machine = context.machine
     |> VendingMachine.insert_coin(:quarter)
-    |> VendingMachine.select_candy(context.machine)
+    |> VendingMachine.select_candy()
 
     { machine, display } = VendingMachine.display(machine)
     assert display == "PRICE 0.65"
 
     { _, display } = VendingMachine.display(machine)
-    assert display == "INSERT COIN"
+    assert display == "0.25"
   end
 
 end

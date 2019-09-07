@@ -30,15 +30,22 @@ defmodule VendingMachine do
   end
 
   def select_cola(machine) do
-    %VendingMachine{ machine | next_display: "PRICE 1.00" }
+    select_product(machine, 100)
   end
 
   def select_chips(machine) do
-    %VendingMachine{ machine | next_display: "PRICE 0.50" }
+    select_product(machine, 50)
   end
 
   def select_candy(machine) do
-    %VendingMachine{ machine | next_display: "PRICE 0.65" }
+    select_product(machine, 65)
+  end
+
+  defp select_product(machine, price) do
+    case machine.inserted do
+      ^price -> %VendingMachine{ machine | inserted: 0, next_display: "THANK YOU" }
+      _ -> %VendingMachine{ machine | next_display: "PRICE " <> format_pennies(price) }
+    end
   end
 
   defp coin_value(:nickel),  do: { :ok, 5 }
