@@ -6,26 +6,26 @@ defmodule VendingMachine do
     next_display: nil
   ]
 
-  def boot() do
-    %VendingMachine{}
-  end
+  def boot(), do: %VendingMachine{}
 
   def display(machine) do
-    display = format_display(machine.inserted, machine.next_display)
-    machine = %VendingMachine{ machine | next_display: nil }
+    display = machine.next_display || Display.balance(machine.inserted)
+    machine = Map.put(machine, :next_display, nil)
     { machine, display }
   end
 
   def coin_return(machine) do
     coins = machine.returned
-    machine = %VendingMachine{ machine | returned: [] }
+    machine = Map.put(machine, :returned, [])
     { machine, coins }
   end
 
   def insert_coin(machine, coin) do
-    case coin_value(coin) do
-      {:ok, value} -> %VendingMachine{ machine | inserted: machine.inserted + value }
-      {:error} -> %VendingMachine{ machine | returned: machine.returned ++ [coin] }
+    case Coin.value(coin) do
+      { :ok, value } -> 
+        Map.put(machine, :inserted, machine.inserted + value)
+      { :error } ->
+        Map.put(machine, :returned, machine.returned ++ [coin])
     end
   end
 
@@ -43,33 +43,48 @@ defmodule VendingMachine do
 
   defp select_product(machine, price) do
     case machine.inserted do
-      ^price -> %VendingMachine{ machine | inserted: 0, next_display: "THANK YOU" }
-      _ -> %VendingMachine{ machine | next_display: "PRICE " <> format_pennies(price) }
+      ^price -> machine
+        |> Map.put(:inserted, 0)
+        |> Map.put(:next_display, Display.thank_you())
+      _ -> machine
+        |> Map.put(:next_display, Display.price(price))
     end
   end
 
-  defp coin_value(:nickel),  do: { :ok, 5 }
-  defp coin_value(:dime),    do: { :ok, 10 }
-  defp coin_value(:quarter), do: { :ok, 25 }
-  defp coin_value(_),        do: { :error }
+end
 
-  defp format_display(0 = _inserted, nil = _next_display) do
+defmodule Display do
+
+  def balance(0) do
     "INSERT COIN"
   end
 
-  defp format_display(inserted, nil = _next_display) do
-    format_pennies(inserted)
+  def balance(n) do
+    format_pennies(n)
   end
 
-  defp format_display(_inserted, next_display) do
-    next_display
+  def thank_you() do
+    "THANK YOU"
+  end
+
+  def price(n) do
+    "PRICE #{format_pennies(n)}"
   end
 
   defp format_pennies(n) do
     {dollars, cents} = n
-      |> Integer.to_string 
-      |> String.pad_leading(3, "0")
-      |> String.split_at(-2)
+    |> Integer.to_string 
+    |> String.pad_leading(3, "0")
+    |> String.split_at(-2)
+
     "#{dollars}.#{cents}"
   end
+
+end
+
+defmodule Coin do
+  def value(:nickel),  do: { :ok, 5 }
+  def value(:dime),    do: { :ok, 10 }
+  def value(:quarter), do: { :ok, 25 }
+  def value(_),        do: { :error }
 end
