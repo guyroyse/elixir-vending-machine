@@ -43,7 +43,8 @@ defmodule VendingMachine do
 
   defp select_product(machine, price) do
     case machine.inserted do
-      ^price -> machine
+      inserted when inserted >= price -> machine
+        |> Map.put(:returned, machine.returned ++ Changer.make_change(inserted - price))
         |> Map.put(:inserted, 0)
         |> Map.put(:next_display, Display.thank_you())
       _ -> machine
@@ -80,6 +81,28 @@ defmodule Display do
     "#{dollars}.#{cents}"
   end
 
+end
+
+defmodule Changer do
+  def make_change(balance) do
+    make_change(balance, [])
+  end
+
+  def make_change(balance, coins) when balance >= 25 do
+    make_change(balance - 25, coins ++ [:quarter])
+  end
+
+  def make_change(balance, coins) when balance >= 10 do
+    make_change(balance - 10, coins ++ [:dime])
+  end
+
+  def make_change(balance, coins) when balance >= 5 do
+    make_change(balance - 5, coins ++ [:nickel])
+  end
+
+  def make_change(0, coins) do
+    coins
+  end
 end
 
 defmodule Coin do
